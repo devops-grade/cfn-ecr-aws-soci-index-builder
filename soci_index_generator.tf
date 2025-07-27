@@ -13,8 +13,8 @@ locals {
 resource "null_resource" "install_dependencies" {
   provisioner "local-exec" {
     command = "bash ./scripts/setup-go-lambda-env.sh"
+  }
 }
-
 # Build Go Lambda function using null_resource
 resource "null_resource" "build_go_lambda" {
   depends_on = [null_resource.install_dependencies]
