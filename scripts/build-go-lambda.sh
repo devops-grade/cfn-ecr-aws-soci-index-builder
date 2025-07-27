@@ -58,7 +58,7 @@ log_success "Go Lambda function built successfully"
 ls -l
 pwd
 # Copy ZIP
-cp soci_index_generator_lambda.zip ../../../../../../
+#cp soci_index_generator_lambda.zip ../../../../../../
 
 ls -l
 pwd
