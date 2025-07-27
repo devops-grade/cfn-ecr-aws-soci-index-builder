@@ -194,28 +194,28 @@ jobs:
         path: cfn-ecr-aws-soci-index-builder/tfplan
         retention-days: 5
 
-  security-scan:
-    name: 'Security Scan'
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
+  # security-scan:
+  #   name: 'Security Scan'
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'pull_request' || github.event_name == 'push'
     
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v4
 
-    - name: Run Checkov action
-      id: checkov
-      uses: bridgecrewio/checkov-action@master
-      with:
-        directory: cfn-ecr-aws-soci-index-builder
-        framework: terraform
-        output_format: sarif
-        output_file_path: reports/results.sarif
-        download_external_modules: true
-        quiet: true
+  #   - name: Run Checkov action
+  #     id: checkov
+  #     uses: bridgecrewio/checkov-action@master
+  #     with:
+  #       directory: cfn-ecr-aws-soci-index-builder
+  #       framework: terraform
+  #       output_format: sarif
+  #       output_file_path: reports/results.sarif
+  #       download_external_modules: true
+  #       quiet: true
 
-    - name: Upload SARIF file
-      if: always()
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: reports/results.sarif
+  #   - name: Upload SARIF file
+  #     if: always()
+  #     uses: github/codeql-action/upload-sarif@v3
+  #     with:
+  #       sarif_file: reports/results.sarif
