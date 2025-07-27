@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
-echo "DEBUG: TF_CALLING_REPO_ROOT=$TF_CALLING_REPO_ROOT"
+echo "PWD: $(pwd)"
+echo "TF_CALLING_REPO_ROOT (env): ${TF_CALLING_REPO_ROOT:-unset}"
 # ─── COLORS ─────────────────────────────────────────────
 GREEN='\033[0;32m'
 BLUE='\033[1;34m'
@@ -33,6 +34,9 @@ rm -f bootstrap soci_index_generator_lambda.zip
 # fi
 # log_success "Go module dependencies downloaded"
 
+pwd
+ls -la
+
 # ─── BUILD LAMBDA ───────────────────────────────────────
 log_info "🛠 Building Go Lambda binary with Make..."
 if ! make > /dev/null 2>&1; then
@@ -46,6 +50,7 @@ if [ ! -f "soci_index_generator_lambda.zip" ]; then
   log_error "Expected output 'soci_index_generator_lambda.zip' not found"
   exit 1
 fi
+
 log_success "Go Lambda function built successfully"
 echo "DEBUG: TF_CALLING_REPO_ROOT=$TF_CALLING_REPO_ROOT"
 # ─── COPY ZIP TO CALLING REPO PATH ──────────────────────
