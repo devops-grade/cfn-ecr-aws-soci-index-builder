@@ -7,7 +7,12 @@ variable "resource_prefix" {
 locals {
   resource_prefix = var.resource_prefix != "" ? var.resource_prefix : ""
 }
-
+# Build and package Python Lambda function
+data "archive_file" "ecr_image_filter_lambda" {
+  type        = "zip"
+  source_file = "${path.module}/functions/source/ecr-image-action-event-filtering/ecr_image_action_event_filtering_lambda_function.py"
+  output_path = "${path.root}/lambda.zip"
+}
 
 # Install dependencies for Ubuntu 24.04 before building Go Lambda
 resource "null_resource" "install_dependencies" {
