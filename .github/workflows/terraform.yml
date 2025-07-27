@@ -50,10 +50,10 @@ jobs:
       id-token: write
       pull-requests: write
     
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./cfn-ecr-aws-soci-index-builder
+    # defaults:
+    #   run:
+    #     shell: bash
+    #     working-directory: ./cfn-ecr-aws-soci-index-builder
 
     steps:
     - name: Checkout
