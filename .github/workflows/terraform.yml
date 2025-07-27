@@ -1,0 +1,221 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '*.tf'
+      - 'functions/**'
+      - '.github/workflows/terraform.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '*.tf'
+      - 'functions/**'
+      - '.github/workflows/terraform.yml'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform action to perform'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+      resource_prefix:
+        description: 'Resource prefix for AWS resources'
+        required: false
+        default: 'Soci'
+        type: string
+      aws_region:
+        description: 'AWS region to deploy to'
+        required: false
+        default: 'us-east-1'
+        type: string
+
+env:
+  TF_VERSION: '1.9.8'
+  GO_VERSION: '1.24'
+  AWS_DEFAULT_REGION: ${{ github.event.inputs.aws_region || 'us-east-1' }}
+
+jobs:
+  terraform:
+    name: 'Terraform ${{ github.event.inputs.action || (github.event_name == ''pull_request'' && ''plan'' || ''plan'') }}'
+    runs-on: ubuntu-24.04
+    
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./cfn-ecr-aws-soci-index-builder
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-session-name: GitHubActions-TerraformDeploy
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Install system dependencies
+      run: |
+        echo "Installing system dependencies for Ubuntu 24.04..."
+        
+        # Update package list
+        sudo apt-get update -y
+        
+        # Install system dependencies as per Terraform configuration
+        sudo apt-get install -y \
+          python3-pip \
+          make \
+          git \
+          zip \
+          gcc \
+          g++ \
+          zlib1g \
+          zlib1g-dev \
+          curl \
+          wget
+        
+        echo "✓ System dependencies installed successfully"
+
+    - name: Verify dependencies
+      run: |
+        echo "Verifying all dependencies..."
+        
+        echo "✓ Terraform version: $(terraform version)"
+        echo "✓ Go version: $(go version)"
+        echo "✓ Make version: $(make --version | head -n1)"
+        echo "✓ GCC version: $(gcc --version | head -n1)"
+        echo "✓ Git version: $(git --version)"
+        echo "✓ Python version: $(python3 --version)"
+        echo "✓ AWS CLI version: $(aws --version)"
+
+    - name: Terraform Format Check
+      id: fmt
+      run: terraform fmt -check -recursive
+      continue-on-error: true
+
+    - name: Terraform Init
+      id: init
+      run: |
+        terraform init \
+          -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+          -backend-config="key=soci-index-builder/terraform.tfstate" \
+          -backend-config="region=${{ env.AWS_DEFAULT_REGION }}"
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+
+    - name: Terraform Plan
+      id: plan
+      if: github.event_name == 'pull_request' || github.event.inputs.action == 'plan' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+      run: |
+        terraform plan -no-color -input=false \
+          -var="resource_prefix=${{ github.event.inputs.resource_prefix || 'Soci' }}" \
+          -out=tfplan
+      continue-on-error: true
+
+    - name: Update Pull Request
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+          <details><summary>Show Plan</summary>
+
+          \`\`\`\n
+          ${process.env.PLAN}
+          \`\`\`
+
+          </details>
+
+          *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+
+    - name: Terraform Apply
+      if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event.inputs.action == 'apply'
+      run: |
+        if [ "${{ github.event.inputs.action }}" == "apply" ]; then
+          terraform apply -auto-approve -input=false \
+            -var="resource_prefix=${{ github.event.inputs.resource_prefix || 'Soci' }}"
+        else
+          terraform apply -auto-approve tfplan
+        fi
+
+    - name: Terraform Destroy
+      if: github.event.inputs.action == 'destroy'
+      run: |
+        terraform destroy -auto-approve -input=false \
+          -var="resource_prefix=${{ github.event.inputs.resource_prefix || 'Soci' }}"
+
+    - name: Upload Terraform Plan
+      if: steps.plan.outcome == 'success' && github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v4
+      with:
+        name: terraform-plan
+        path: cfn-ecr-aws-soci-index-builder/tfplan
+        retention-days: 5
+
+  security-scan:
+    name: 'Security Scan'
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Run Checkov action
+      id: checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        directory: cfn-ecr-aws-soci-index-builder
+        framework: terraform
+        output_format: sarif
+        output_file_path: reports/results.sarif
+        download_external_modules: true
+        quiet: true
+
+    - name: Upload SARIF file
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: reports/results.sarif
