@@ -12,7 +12,7 @@ locals {
 # Install dependencies for Ubuntu 24.04 before building Go Lambda
 resource "null_resource" "install_dependencies" {
   provisioner "local-exec" {
-    command = "bash ./scripts/setup-go-lambda-env.sh"
+    command = "bash ${path.module}/scripts/setup-go-lambda-env.sh"
   }
 }
 # Build Go Lambda function using null_resource
@@ -30,7 +30,7 @@ resource "null_resource" "build_go_lambda" {
   }
 
   provisioner "local-exec" {
-    command = "bash ./scripts/build-go-lambda.sh "
+    command = "bash ${path.module}/scripts/build-go-lambda.sh "
   }
 
 }
