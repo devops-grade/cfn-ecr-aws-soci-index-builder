@@ -1,18 +1,18 @@
 name: Terraform Deploy
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - '*.tf'
-      - 'functions/**'
-      - '.github/workflows/terraform.yml'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '*.tf'
-      - 'functions/**'
-      - '.github/workflows/terraform.yml'
+  # push:
+  #   branches: [ main ]
+  #   paths:
+  #     - '*.tf'
+  #     - 'functions/**'
+  #     - '.github/workflows/terraform.yml'
+  # pull_request:
+  #   branches: [ main ]
+  #   paths:
+  #     - '*.tf'
+  #     - 'functions/**'
+  #     - '.github/workflows/terraform.yml'
   workflow_dispatch:
     inputs:
       action:
