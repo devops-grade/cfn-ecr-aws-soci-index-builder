@@ -73,45 +73,6 @@ jobs:
       with:
         terraform_version: ${{ env.TF_VERSION }}
 
-    - name: Setup Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ env.GO_VERSION }}
-
-    - name: Install system dependencies
-      run: |
-        echo "Installing system dependencies for Ubuntu 24.04..."
-        
-        # Update package list
-        sudo apt-get update -y
-        
-        # Install system dependencies as per Terraform configuration
-        sudo apt-get install -y \
-          python3-pip \
-          make \
-          git \
-          zip \
-          gcc \
-          g++ \
-          zlib1g \
-          zlib1g-dev \
-          curl \
-          wget
-        
-        echo "✓ System dependencies installed successfully"
-
-    - name: Verify dependencies
-      run: |
-        echo "Verifying all dependencies..."
-        
-        echo "✓ Terraform version: $(terraform version)"
-        echo "✓ Go version: $(go version)"
-        echo "✓ Make version: $(make --version | head -n1)"
-        echo "✓ GCC version: $(gcc --version | head -n1)"
-        echo "✓ Git version: $(git --version)"
-        echo "✓ Python version: $(python3 --version)"
-        echo "✓ AWS CLI version: $(aws --version)"
-
     - name: Terraform Format Check
       id: fmt
       run: terraform fmt -check -recursive
