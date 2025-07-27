@@ -31,4 +31,6 @@ resource "null_resource" "build_go_lambda" {
 
   provisioner "local-exec" {
     command = "bash ./scripts/build-go-lambda.sh "
+  }
+
 }
