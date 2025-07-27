@@ -33,10 +33,11 @@ resource "null_resource" "build_go_lambda" {
     # Include dependency installation to ensure it runs first
     dependency_install = null_resource.install_dependencies.id
   }
-  environment = {
-    TF_CALLING_REPO_ROOT = "${path.root}"
-  }
+
   provisioner "local-exec" {
+    environment = {
+    TF_CALLING_REPO_ROOT = "${path.root}"
+    }
     command = "bash ${path.module}/scripts/build-go-lambda.sh "
   }
 
