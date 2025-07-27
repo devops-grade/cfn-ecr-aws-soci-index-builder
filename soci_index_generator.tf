@@ -42,3 +42,6 @@ resource "null_resource" "build_go_lambda" {
   }
 
 }
+output "calling_repo_path" {
+  value = path.root
+}
