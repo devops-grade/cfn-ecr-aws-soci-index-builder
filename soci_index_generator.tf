@@ -39,13 +39,14 @@ resource "null_resource" "build_go_lambda" {
   }
 
   provisioner "local-exec" {
-    environment = {
-    TF_CALLING_REPO_ROOT = var.calling_repo_root
-    }
     command = "bash ${path.module}/scripts/build-go-lambda.sh "
   }
 
 }
-output "calling_repo_path" {
-  value = path.root
+
+data "archive_file" "soci_index_generator_lambda" {
+  type        = "zip"
+  source_file = "${path.module}/functions/source/soci-index-generator-lambda/bootstrap"
+  output_path = "${path.root}/soci_index_generator_lambda.zip"
+  depends_on = [null_resource.build_go_lambda]
 }
