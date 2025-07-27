@@ -55,7 +55,7 @@ fi
 
 log_success "Go Lambda function built successfully"
 
-echo "DEBUG: ZIP_SOURCE=$ZIP_SOURCE"
+
 echo "DEBUG: TF_CALLING_REPO_ROOT=$CALLING_REPO_ROOT"
 ls -l
 pwd
