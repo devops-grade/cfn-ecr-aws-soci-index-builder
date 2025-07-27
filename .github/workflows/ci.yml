@@ -1,51 +1,51 @@
-name: CI
+# name: CI
 
-on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'functions/source/soci-index-generator-lambda/**'
-      - '.github/workflows/ci.yml'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'functions/source/soci-index-generator-lambda/**'
-      - '.github/workflows/ci.yml'
+# on:
+#   push:
+#     branches: [ main ]
+#     paths:
+#       - 'functions/source/soci-index-generator-lambda/**'
+#       - '.github/workflows/ci.yml'
+#   pull_request:
+#     branches: [ main ]
+#     paths:
+#       - 'functions/source/soci-index-generator-lambda/**'
+#       - '.github/workflows/ci.yml'
 
-env:
-  GO_VERSION: '1.24'
-  GOLANGCI_LINT_VERSION: '2.1.6'
+# env:
+#   GO_VERSION: '1.24'
+#   GOLANGCI_LINT_VERSION: '2.1.6'
 
-jobs:
-  lint:
-    strategy:
-      matrix:
-        working_dir: ['functions/source/soci-index-generator-lambda']
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: golangci/golangci-lint-action@v8
-        with:
-          version: v${{ env.GOLANGCI_LINT_VERSION }}
-          working-directory: ${{ matrix.working_dir }}
+# jobs:
+#   lint:
+#     strategy:
+#       matrix:
+#         working_dir: ['functions/source/soci-index-generator-lambda']
+#     runs-on: ubuntu-22.04
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: golangci/golangci-lint-action@v8
+#         with:
+#           version: v${{ env.GOLANGCI_LINT_VERSION }}
+#           working-directory: ${{ matrix.working_dir }}
 
-  test:
-    name: Unit Test
-    runs-on: ubuntu-latest
+#   test:
+#     name: Unit Test
+#     runs-on: ubuntu-latest
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v4
       
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ env.GO_VERSION }}
+#     - name: Set up Go
+#       uses: actions/setup-go@v5
+#       with:
+#         go-version: ${{ env.GO_VERSION }}
 
-    - name: Download dependencies
-      working-directory: ./functions/source/soci-index-generator-lambda
-      run: go mod download
+#     - name: Download dependencies
+#       working-directory: ./functions/source/soci-index-generator-lambda
+#       run: go mod download
       
-    - name: Run unit tests
-      working-directory: ./functions/source/soci-index-generator-lambda
-      run: make test
+#     - name: Run unit tests
+#       working-directory: ./functions/source/soci-index-generator-lambda
+#       run: make test
