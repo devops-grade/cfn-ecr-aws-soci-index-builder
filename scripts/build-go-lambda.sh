@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-echo "PWD: $(pwd)"
-echo "TF_CALLING_REPO_ROOT (env): ${TF_CALLING_REPO_ROOT:-unset}"
+
 # ─── COLORS ─────────────────────────────────────────────
 GREEN='\033[0;32m'
 BLUE='\033[1;34m'
@@ -56,14 +55,13 @@ fi
 
 log_success "Go Lambda function built successfully"
 echo "DEBUG: TF_CALLING_REPO_ROOT=$TF_CALLING_REPO_ROOT"
-# ─── COPY ZIP TO CALLING REPO PATH ──────────────────────
-# Get original working directory from Terraform via PWD env
+ZIP_SOURCE="${BASH_SOURCE%/*}/../functions/source/soci-index-generator-lambda/soci_index_generator_lambda.zip"
 CALLING_REPO_ROOT="${TF_CALLING_REPO_ROOT:-$PWD}"
 
-log_info "📁 Copying ZIP to: $CALLING_REPO_ROOT"
+echo "DEBUG: ZIP_SOURCE=$ZIP_SOURCE"
+echo "DEBUG: TF_CALLING_REPO_ROOT=$CALLING_REPO_ROOT"
 
-cp soci_index_generator_lambda.zip "$CALLING_REPO_ROOT/soci_index_generator_lambda.zip"
+# Copy ZIP
+cp "$ZIP_SOURCE" "$CALLING_REPO_ROOT/soci_index_generator_lambda.zip"
 
-log_success "Copied to: $CALLING_REPO_ROOT/soci_index_generator_lambda.zip ✅"
-
-log_success "Output: soci_index_generator_lambda.zip ✅"
+echo "✅ Copied ZIP to $CALLING_REPO_ROOT/soci_index_generator_lambda.zip"
