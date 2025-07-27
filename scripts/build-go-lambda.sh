@@ -54,14 +54,14 @@ if [ ! -f "soci_index_generator_lambda.zip" ]; then
 fi
 
 log_success "Go Lambda function built successfully"
-echo "DEBUG: TF_CALLING_REPO_ROOT=$TF_CALLING_REPO_ROOT"
-ZIP_SOURCE="${BASH_SOURCE%/*}/../functions/source/soci-index-generator-lambda/soci_index_generator_lambda.zip"
-CALLING_REPO_ROOT="${TF_CALLING_REPO_ROOT:-$PWD}"
 
 echo "DEBUG: ZIP_SOURCE=$ZIP_SOURCE"
 echo "DEBUG: TF_CALLING_REPO_ROOT=$CALLING_REPO_ROOT"
-
+ls -l
+pwd
 # Copy ZIP
-cp "$ZIP_SOURCE" "$CALLING_REPO_ROOT/soci_index_generator_lambda.zip"
+cp soci_index_generator_lambda.zip ../../../../../../
 
+ls -l
+pwd
 echo "✅ Copied ZIP to $CALLING_REPO_ROOT/soci_index_generator_lambda.zip"
