@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-
+echo "DEBUG: TF_CALLING_REPO_ROOT=$TF_CALLING_REPO_ROOT"
 # ─── COLORS ─────────────────────────────────────────────
 GREEN='\033[0;32m'
 BLUE='\033[1;34m'
@@ -25,13 +25,13 @@ log_info "🧹 Cleaning old build files..."
 rm -f bootstrap soci_index_generator_lambda.zip
 
 # ─── DOWNLOAD DEPENDENCIES ──────────────────────────────
-log_info "🔄 Downloading Go module dependencies..."
-if ! go mod download > /dev/null 2>&1; then
-  log_error "Failed to download Go module dependencies"
-  log_warn  "Please check your internet connection or go.mod"
-  exit 1
-fi
-log_success "Go module dependencies downloaded"
+# log_info "🔄 Downloading Go module dependencies..."
+# if ! go mod download > /dev/null 2>&1; then
+#   log_error "Failed to download Go module dependencies"
+#   log_warn  "Please check your internet connection or go.mod"
+#   exit 1
+# fi
+# log_success "Go module dependencies downloaded"
 
 # ─── BUILD LAMBDA ───────────────────────────────────────
 log_info "🛠 Building Go Lambda binary with Make..."
