@@ -46,6 +46,16 @@ if [ ! -f "soci_index_generator_lambda.zip" ]; then
   log_error "Expected output 'soci_index_generator_lambda.zip' not found"
   exit 1
 fi
-
 log_success "Go Lambda function built successfully"
+
+# ─── COPY ZIP TO CALLING REPO PATH ──────────────────────
+# Get original working directory from Terraform via PWD env
+CALLING_REPO_ROOT="${TF_CALLING_REPO_ROOT:-$PWD}"
+
+log_info "📁 Copying ZIP to: $CALLING_REPO_ROOT"
+
+cp soci_index_generator_lambda.zip "$CALLING_REPO_ROOT/soci_index_generator_lambda.zip"
+
+log_success "Copied to: $CALLING_REPO_ROOT/soci_index_generator_lambda.zip ✅"
+
 log_success "Output: soci_index_generator_lambda.zip ✅"
