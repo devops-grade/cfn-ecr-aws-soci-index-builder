@@ -11,7 +11,7 @@ log() {
 }
 
 log "Installing build tools..."
-sudo apt-get update -y
+sudo apt-get update -y > /dev/null
 sudo apt-get install -y --no-install-recommends \
   make \
   git \
