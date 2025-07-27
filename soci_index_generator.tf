@@ -30,43 +30,5 @@ resource "null_resource" "build_go_lambda" {
   }
 
   provisioner "local-exec" {
-    command = <<-EOT
-      echo "Building Go Lambda function..."
-      cd ${path.module}/functions/source/soci-index-generator-lambda
-      
-      
-      # Set GOPROXY as per Dockerfile
-      export GOPROXY=direct
-      
-      # Clean any previous builds
-      rm -f bootstrap soci_index_generator_lambda.zip
-      
-      # Download Go module dependencies
-      echo "Downloading Go module dependencies..."
-      if ! go mod download; then
-        echo "Error: Failed to download Go module dependencies"
-        echo "Please check your internet connection and Go module configuration"
-        exit 1
-      fi
-      
-      echo "✓ Go module dependencies downloaded successfully"
-      
-      # Run make with error handling
-      echo "Building Go Lambda binary..."
-      if ! make; then
-        echo "Error: Failed to build Go Lambda function"
-        echo "Please check the build output above for details"
-        exit 1
-      fi
-      
-      # Verify the zip file was created
-      if [ ! -f "soci_index_generator_lambda.zip" ]; then
-        echo "Error: Expected zip file 'soci_index_generator_lambda.zip' was not created"
-        exit 1
-      fi
-      
-      echo "✓ Go Lambda function built successfully"
-      echo "✓ Created: soci_index_generator_lambda.zip"
-    EOT
-  }
+    command = "bash ./scripts/build-go-lambda.sh "
 }
