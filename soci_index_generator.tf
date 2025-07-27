@@ -3,6 +3,10 @@ variable "resource_prefix" {
   description = "Prefix for AWS resources (Lambda functions, IAM roles, etc.) created by the SOCI implementation. Used to ensure unique resource names and identify SOCI-related resources. Default is `ecr-soci-indexer`."
   default     = "Soci"
 }
+variable "calling_repo_root" {
+  type        = string
+  description = "Path to the root of the calling Terraform repo"
+}
 
 locals {
   resource_prefix = var.resource_prefix != "" ? var.resource_prefix : ""
