@@ -151,11 +151,3 @@ resource "null_resource" "build_go_lambda" {
 }
 
 # Upload Go Lambda zip to S3
-resource "aws_s3_object" "soci_index_generator_lambda" {
-  depends_on = [null_resource.build_go_lambda]
-
-  bucket = aws_s3_bucket.lambda_deployment_assets.bucket
-  key    = "cfn-ecr-aws-soci-index-builder/functions/packages/soci-index-generator-lambda/soci_index_generator_lambda.zip"
-  source = "${path.module}/functions/source/soci-index-generator-lambda/soci_index_generator_lambda.zip"
-  etag   = filemd5("${path.module}/functions/source/soci-index-generator-lambda/soci_index_generator_lambda.zip")
-}
