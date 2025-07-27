@@ -26,7 +26,8 @@ rm -f bootstrap soci_index_generator_lambda.zip
 
 # ─── DOWNLOAD DEPENDENCIES ──────────────────────────────
 log_info "🔄 Downloading Go module dependencies..."
-if ! go mod download > /dev/null 2>&1; then
+#if ! go mod download > /dev/null 2>&1; then
+if ! go mod download; then
   log_error "Failed to download Go module dependencies"
   log_warn  "Please check your internet connection or go.mod"
   exit 1
