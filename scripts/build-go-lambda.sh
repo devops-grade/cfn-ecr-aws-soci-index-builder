@@ -47,7 +47,7 @@ if [ ! -f "soci_index_generator_lambda.zip" ]; then
   exit 1
 fi
 log_success "Go Lambda function built successfully"
-
+echo "DEBUG: TF_CALLING_REPO_ROOT=$TF_CALLING_REPO_ROOT"
 # ─── COPY ZIP TO CALLING REPO PATH ──────────────────────
 # Get original working directory from Terraform via PWD env
 CALLING_REPO_ROOT="${TF_CALLING_REPO_ROOT:-$PWD}"
