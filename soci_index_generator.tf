@@ -40,7 +40,7 @@ resource "null_resource" "build_go_lambda" {
 
   provisioner "local-exec" {
     environment = {
-    TF_CALLING_REPO_ROOT = "${path.root}"
+    TF_CALLING_REPO_ROOT = var.calling_repo_root
     }
     command = "bash ${path.module}/scripts/build-go-lambda.sh "
   }
