@@ -45,6 +45,9 @@ if ! make > /dev/null 2>&1; then
   exit 1
 fi
 
+pwd
+ls -la
+
 # ─── VERIFY ZIP OUTPUT ──────────────────────────────────
 if [ ! -f "soci_index_generator_lambda.zip" ]; then
   log_error "Expected output 'soci_index_generator_lambda.zip' not found"
