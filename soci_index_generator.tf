@@ -1,60 +1,13 @@
-data "aws_caller_identity" "current" {}
+variable "resource_prefix" {
+  type        = string
+  description = "Prefix for AWS resources (Lambda functions, IAM roles, etc.) created by the SOCI implementation. Used to ensure unique resource names and identify SOCI-related resources. Default is `ecr-soci-indexer`."
+  default     = "Soci"
+}
 
 locals {
   resource_prefix = var.resource_prefix != "" ? var.resource_prefix : ""
 }
 
-# S3 bucket for storing Lambda deployment assets
-resource "aws_s3_bucket" "lambda_deployment_assets" {
-  bucket = "${local.resource_prefix}-lambda-deployment-assets-${random_string.bucket_suffix.result}"
-}
-
-resource "random_string" "bucket_suffix" {
-  length  = 8
-  special = false
-  upper   = false
-}
-
-resource "aws_s3_bucket_versioning" "lambda_deployment_assets" {
-  bucket = aws_s3_bucket.lambda_deployment_assets.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "lambda_deployment_assets" {
-  bucket = aws_s3_bucket.lambda_deployment_assets.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "lambda_deployment_assets" {
-  bucket = aws_s3_bucket.lambda_deployment_assets.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-# Build and package Python Lambda function
-data "archive_file" "ecr_image_filter_lambda" {
-  type        = "zip"
-  source_file = "${path.module}/functions/source/ecr-image-action-event-filtering/ecr_image_action_event_filtering_lambda_function.py"
-  output_path = "${path.module}/ecr_image_filter_lambda.zip"
-}
-
-# Upload Python Lambda zip to S3
-resource "aws_s3_object" "ecr_image_filter_lambda" {
-  bucket = aws_s3_bucket.lambda_deployment_assets.bucket
-  key    = "cfn-ecr-aws-soci-index-builder/functions/packages/ecr-image-action-event-filtering/lambda.zip"
-  source = data.archive_file.ecr_image_filter_lambda.output_path
-  etag   = data.archive_file.ecr_image_filter_lambda.output_md5
-}
 
 # Install dependencies for Ubuntu 24.04 before building Go Lambda
 resource "null_resource" "install_dependencies" {
