@@ -283,29 +283,3 @@ resource "aws_lambda_permission" "allow_event_bridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.ecr_image_action_event.arn
 }
-
-# Output values
-output "s3_bucket_name" {
-  description = "Name of the S3 bucket containing Lambda deployment assets"
-  value       = aws_s3_bucket.lambda_deployment_assets.bucket
-}
-
-output "s3_bucket_arn" {
-  description = "ARN of the S3 bucket containing Lambda deployment assets"
-  value       = aws_s3_bucket.lambda_deployment_assets.arn
-}
-
-output "ecr_image_filter_lambda_arn" {
-  description = "ARN of the ECR Image Action Event Filter Lambda function"
-  value       = aws_lambda_function.ecr_image_action_event_filtering.arn
-}
-
-output "soci_index_generator_lambda_arn" {
-  description = "ARN of the SOCI Index Generator Lambda function"
-  value       = aws_lambda_function.soci_index_generator.arn
-}
-
-output "eventbridge_rule_arn" {
-  description = "ARN of the EventBridge rule that triggers the Lambda functions"
-  value       = aws_cloudwatch_event_rule.ecr_image_action_event.arn
-}
