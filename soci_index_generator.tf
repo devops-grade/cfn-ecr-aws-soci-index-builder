@@ -67,8 +67,10 @@ resource "aws_lambda_function" "soci_index_generator" {
   role          = aws_iam_role.soci_index_generator.arn
   timeout       = var.soci_ecr_image_filter_lambda_timeout
 
-  filename         = data.archive_file.soci_index_generator_lambda.output_path
-  source_code_hash = data.archive_file.soci_index_generator_lambda.output_base64sha256
+  #filename         = data.archive_file.soci_index_generator_lambda.output_path
+  #source_code_hash = data.archive_file.soci_index_generator_lambda.output_base64sha256
+  filename         = "${path.root}/soci_index_generator_lambda.zip"
+  source_code_hash = filebase64sha256("${path.root}/soci_index_generator_lambda.zip")
   ephemeral_storage {
     size = var.soci_index_generator_lambda_ephemeral_storage # 10GB
   }
