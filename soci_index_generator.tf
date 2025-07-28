@@ -42,7 +42,7 @@ data "archive_file" "soci_index_generator_lambda" {
   type        = "zip"
   source_file = "${path.module}/functions/source/soci-index-generator-lambda/bootstrap"
   output_path = "${path.root}/soci_index_generator_lambda.zip"
-  depends_on = [null_resource.build_go_lambda]
+  #depends_on = [null_resource.build_go_lambda]
 }
 
 resource "aws_lambda_function" "ecr_image_action_event_filtering" {
