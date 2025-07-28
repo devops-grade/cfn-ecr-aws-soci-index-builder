@@ -69,8 +69,8 @@ resource "aws_lambda_function" "soci_index_generator" {
 
   #filename         = data.archive_file.soci_index_generator_lambda.output_path
   #source_code_hash = data.archive_file.soci_index_generator_lambda.output_base64sha256
-  filename         = "${path.root}/soci_index_generator_lambda.zip"
-  source_code_hash = filebase64sha256("${path.root}/soci_index_generator_lambda.zip")
+  s3_bucket = "soci-terraform-state-32014"
+  s3_key    = "cfn-ecr-aws-soci-index-builder/functions/packages/soci-index-generator-lambda/soci_index_generator_lambda.zip"
   ephemeral_storage {
     size = var.soci_index_generator_lambda_ephemeral_storage # 10GB
   }
