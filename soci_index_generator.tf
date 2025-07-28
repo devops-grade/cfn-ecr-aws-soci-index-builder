@@ -37,7 +37,14 @@ resource "null_resource" "build_go_lambda" {
   }
 }
 
-# zip and copy the bootstrap to root location
+resource "aws_s3_object" "soci_index_generator_lambda" {
+  depends_on = [null_resource.build_go_lambda]
+
+  bucket = "soci-terraform-state-32014"
+  key    = "cfn-ecr-aws-soci-index-builder/functions/packages/soci-index-generator-lambda/soci_index_generator_lambda.zip"
+  source = "${path.module}/functions/source/soci-index-generator-lambda/soci_index_generator_lambda.zip"
+  etag   = filemd5("${path.module}/functions/source/soci-index-generator-lambda/soci_index_generator_lambda.zip")
+}
 
 
 resource "aws_lambda_function" "ecr_image_action_event_filtering" {
@@ -70,7 +77,7 @@ resource "aws_lambda_function" "soci_index_generator" {
   #filename         = data.archive_file.soci_index_generator_lambda.output_path
   #source_code_hash = data.archive_file.soci_index_generator_lambda.output_base64sha256
   s3_bucket = "soci-terraform-state-32014"
-  s3_key    = "cfn-ecr-aws-soci-index-builder/functions/packages/soci-index-generator-lambda/soci_index_generator_lambda.zip"
+  s3_key    = aws_s3_object.soci_index_generator_lambda.key
   ephemeral_storage {
     size = var.soci_index_generator_lambda_ephemeral_storage # 10GB
   }
